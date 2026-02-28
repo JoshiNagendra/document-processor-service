@@ -18,7 +18,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    // ✅ Producer Factory for any Object
+    // Producer Factory Method
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> config = new HashMap<>();
@@ -28,13 +28,13 @@ public class KafkaConfig {
         return new DefaultKafkaProducerFactory<>(config);
     }
 
-    // ✅ Generic KafkaTemplate for all message types
+    // Kafka Template
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    // ✅ Consumer Factory for DocumentUploadedEvent
+    // Consumer Factory
     @Bean
     public ConsumerFactory<String, DocumentUploadedEvent> consumerFactory() {
         JsonDeserializer<DocumentUploadedEvent> deserializer = new JsonDeserializer<>(DocumentUploadedEvent.class);
@@ -50,8 +50,7 @@ public class KafkaConfig {
 
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
     }
-
-    // ✅ Kafka Listener Container Factory for DocumentUploadedEvent
+// Kafka Listener
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, DocumentUploadedEvent> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, DocumentUploadedEvent> factory =
