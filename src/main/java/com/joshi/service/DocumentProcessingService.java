@@ -6,6 +6,7 @@ import com.joshi.dto.DocumentUploadedEvent;
 import com.joshi.model.ProcessingResult;
 import com.joshi.repository.ProcessingResultRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,9 @@ public class DocumentProcessingService {
     public void process(DocumentUploadedEvent event) {
         try {
             InputStream stream = s3Service.download(event.getS3Path());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            String content = reader.lines().collect(Collectors.joining(" "));
+            Tika tika = new Tika();
+            String content = tika.parseToString(stream);
+            log.info("Extracted text from : "+content);
 
             String classification;
             if (isValidResume(content)) {
