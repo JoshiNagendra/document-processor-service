@@ -16,6 +16,7 @@ public class ProcessingResult {
     private String fileName;
 
     @Column(name = "text_extracted", columnDefinition = "TEXT")
+    @Lob
     private String textExtracted;
     private String classification;
     private LocalDateTime processedAt;

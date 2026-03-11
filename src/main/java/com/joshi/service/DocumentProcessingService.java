@@ -35,7 +35,13 @@ public class DocumentProcessingService {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             String content = reader.lines().collect(Collectors.joining(" "));
 
-            String classification = "generic"; // Dummy logic
+            String classification;
+            if (isValidResume(content)) {
+                classification = "resume";
+                s3Service.moveFile(event.getS3Path(), "resume/");
+            } else {
+                classification = "generic";
+            }
 
             ProcessingResult result = new ProcessingResult();
             result.setFileName(event.getFileName());
@@ -62,5 +68,13 @@ public class DocumentProcessingService {
 
             kafkaTemplate.send("document.failed", event.getFileName(), failedEvent);
         }
+
+    }
+
+    private boolean isValidResume(String content) {
+        String lower = content.toLowerCase();
+        return lower.contains("education") &&
+                lower.contains("experience") &&
+                lower.contains("skills");
     }
 }
